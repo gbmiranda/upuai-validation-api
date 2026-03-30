@@ -75,9 +75,9 @@ public class RedisConfig {
         var container = StreamMessageListenerContainer.create(factory, options);
 
         Subscription subscription = container.receiveAutoAck(
-                org.springframework.data.redis.consumer.Consumer.from(CONSUMER_GROUP, CONSUMER_NAME),
-                org.springframework.data.redis.stream.StreamOffset.create(STREAM_KEY,
-                        org.springframework.data.redis.stream.ReadOffset.lastConsumed()),
+                org.springframework.data.redis.connection.stream.Consumer.from(CONSUMER_GROUP, CONSUMER_NAME),
+                org.springframework.data.redis.connection.stream.StreamOffset.create(STREAM_KEY,
+                        org.springframework.data.redis.connection.stream.ReadOffset.lastConsumed()),
                 consumer
         );
 
