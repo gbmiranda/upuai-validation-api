@@ -8,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
@@ -40,15 +41,20 @@ public class MinioConfig {
 
     @Bean
     public S3Presigner s3Presigner() {
-        String endpoint = System.getenv("S3_ENDPOINT");
+        String publicEndpoint = System.getenv("S3_PUBLIC_ENDPOINT");
+        String endpoint = publicEndpoint != null ? publicEndpoint : System.getenv("S3_ENDPOINT");
         String accessKey = System.getenv("S3_ACCESS_KEY_ID");
         String secretKey = System.getenv("S3_SECRET_ACCESS_KEY");
 
+        log.info("S3 Presigner using endpoint {}", endpoint);
         return S3Presigner.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.US_EAST_1)
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
                 .build();
     }
 }
